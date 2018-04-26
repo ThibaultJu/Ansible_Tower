@@ -1,15 +1,21 @@
 ---
-- name: Show Run
-  hosts: 10.1.16.203
-  gather_facts: no
-  connection: network_cli
-  remote_user: admin
-  become: yes
-  become_method: enable
-  become_user: admin
+- hosts: CISCO
+  connection: local
 
   tasks:
-    - name: Show Run
-        ios_command:
-          commands: sh Run
-        register: show run
+    - name: Define provider
+      set_fact:
+        provider:
+          host: "{{ ansible_host }}"
+          username: admin
+          password: switch
+          auth_pass: switch
+          port: 22
+          timeout: 10
+    - name: run show version
+      ios_command:
+        commands: "show version"
+        provider: "{{ provider }}"
+      register: show_version
+    - name: print the show version output
+      debug: var=show_version
